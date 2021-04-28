@@ -21,11 +21,22 @@ import pygame  # noqa
 TELEMETRY_STRUCT = struct.Struct(">Hhffb31B")
 COMMAND_STRUCT = struct.Struct(">fB3s")
 
-def compute_lat_arspd():
-	lateral_arspd = float(0.0)
+def compute_lat_arspd(y_err, y_err_last, y_err_sum):
+	# PID Gains
+	kp = 4
+	kd = 1
+	ki = 0
+	lateral_arspd = float(kp*y_err + kd*(y_err-y_err_last) + ki*y_err_sum)
 	return lateral_arspd
 
-def compute_drop(flag):
+def compute_drop(drop):
+	result = 1
+	if result == 1:
+		return validate_drop(drop)
+	else:
+		return result
+
+def validate_drop(flag):
 	if flag == 0:
 		drop = 1
 	else:
@@ -33,6 +44,8 @@ def compute_drop(flag):
 	return drop
 
 drop = 0
+y_err_last = 0
+y_err_sum = 0
 
 while True:
 
@@ -48,9 +61,9 @@ while True:
 
 	drop = compute_drop(drop)
 
-	lat = compute_lat_arspd()
-	#lat = (float)(0.0)
-	#dr = int(1)
+	lat = compute_lat_arspd(y_err, y_err_last, y_err_sum)
+	y_err_last = y_err
+	y_err_sum = y_err_sum + y_err
 
 	command = COMMAND_STRUCT.pack(lat, drop, b'3s')
 	sys.stdout.buffer.write(command)
