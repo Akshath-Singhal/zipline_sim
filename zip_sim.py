@@ -97,6 +97,7 @@ RECOVERED = 0
 PARALANDED = 1
 CRASHED = 2
 SIM_QUIT = 3
+PILOT_DIED = 4
 
 
 def load_image(name):
@@ -403,7 +404,7 @@ if __name__ == "__main__":
             loop_count += 1
             cmd = pilot.stdout.read(COMMAND_STRUCT.size)
             if len(cmd) != COMMAND_STRUCT.size:
-                result = CRASHED  # The pilot process must have exited
+                result = PILOT_DIED  # The pilot process must have exited
                 break
             lateral_airspeed_input, drop_package_commanded_byte, _ = COMMAND_STRUCT.unpack(cmd)
             lateral_airspeed = max(-30.0, min(30.0, lateral_airspeed_input))
@@ -532,4 +533,5 @@ if __name__ == "__main__":
         pilot.wait()
     print("Deliveries: {}".format(len(package_count_by_site)))
     print("ZIPAA Violations: {}".format(sum((x - 1 for x in package_count_by_site.values() if x > 1))))
+    print("Result: {}".format(num_packages))
     sys.exit(result)
