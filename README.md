@@ -5,9 +5,9 @@ The autoppilot governing navigation, collision avoidance and payload drop has be
 
 Use the following commands to run the simulator and autopilot:
 
-'''shell
+```shell
 python3 -m venv test_environment
 source test_environment/bin/activate
 pip3 install -r requirements.txt
 python3 zip_sim.py python my_pilot.py
-'''
+```
